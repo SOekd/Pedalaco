@@ -22,8 +22,8 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
 
-        http.oauth2Login()
-                .loginPage(LOGIN_URL)
-                .permitAll();
+//        http.oauth2Login()
+                //.loginPage(LOGIN_URL)
+                //.permitAll();
     }
 }
