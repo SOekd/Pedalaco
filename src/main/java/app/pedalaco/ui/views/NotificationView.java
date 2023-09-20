@@ -6,12 +6,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-@Route(value ="explore", layout = ToolbarComponent.class)
+@Route(value ="notifications", layout = ToolbarComponent.class)
 @AnonymousAllowed
-public class ExploreView extends VerticalLayout {
+public class NotificationView extends VerticalLayout {
 
-    public ExploreView(){
-        add(new H1("Explore view"));
+    public NotificationView(){
+        add(new H1("NotificationView"));
     }
-
 }

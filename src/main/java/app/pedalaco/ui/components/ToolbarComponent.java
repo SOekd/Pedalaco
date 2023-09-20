@@ -32,10 +32,30 @@ public class ToolbarComponent extends AppLayout {
         notificationIcon.setColor("blue");
 
         Button homeButton = new Button(homeIcon);
+        homeButton.addClickListener(e ->
+                homeButton.getUI().ifPresent(ui ->
+                        ui.navigate("home"))
+        );
         Button exploreButton = new Button(exploreIcon);
+        exploreButton.addClickListener(e ->
+                exploreButton.getUI().ifPresent(ui ->
+                        ui.navigate("explore"))
+        );
         Button postButton = new Button(postIcon);
+        postButton.addClickListener(e ->
+                postButton.getUI().ifPresent(ui ->
+                        ui.navigate("post"))
+        );
         Button chatButton = new Button(chatIcon);
+        chatButton.addClickListener(e ->
+                chatButton.getUI().ifPresent(ui ->
+                        ui.navigate("chat"))
+        );
         Button notificationButton = new Button(notificationIcon);
+        notificationButton.addClickListener(e ->
+                notificationButton.getUI().ifPresent(ui ->
+                        ui.navigate("notification"))
+        );
 
         var footer = new HorizontalLayout(homeButton,exploreButton,postButton,chatButton,notificationButton);
         footer.addClassName("footer-navbar");
@@ -52,6 +72,7 @@ public class ToolbarComponent extends AppLayout {
         appName.addClassName("app-name");
 
         var header = new HorizontalLayout(new DrawerToggle(),appName);
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
 
         addToNavbar(header);
     }
