@@ -16,7 +16,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
  * The main view contains a button and a click listener.
  */
 @Route(value = "home", layout = ToolbarComponent.class)
-@RouteAlias("")
+@RouteAlias(value = "", layout = ToolbarComponent.class)
 @AnonymousAllowed
 public class MainView extends VerticalLayout {
 
