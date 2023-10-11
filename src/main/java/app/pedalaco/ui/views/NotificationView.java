@@ -12,5 +12,8 @@ public class NotificationView extends VerticalLayout {
 
     public NotificationView(){
         add(new H1("NotificationView"));
+
+
+
     }
 }
