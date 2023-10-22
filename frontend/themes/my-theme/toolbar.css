@@ -7,9 +7,15 @@
 .drawer-icon{
     font-size: 45px;
 }
-
 .drawer-button{
     aspect-ratio: 1/1;
     width: fit-content;
     height: fit-content;
+}
+.header-icon{
+    font-size: 45px;
+}
+
+.drawer-group-container{
+    background-color: grey;
 }
