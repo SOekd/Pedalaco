@@ -34,8 +34,6 @@ public class ToolbarComponent extends AppLayout {
         createDrawer();
     }
 
-
-
     private void createHeader(){
         HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), new H1("Pedalaço"));
         addToNavbar(header,debugText);
@@ -50,18 +48,13 @@ public class ToolbarComponent extends AppLayout {
         postIcon.addClassName(HEADER_ICON_CLASS_NAME);
 
 
-        Button homeButton = new Button(homeIcon, event -> {
-            getUI().ifPresent(ui -> ui.navigate(ExploreView.class));
-        });
-        Button chatButton = new Button(chatIcon, event -> {
-            getUI().ifPresent(ui -> ui.navigate(ChatsMenuView.class));
-        });
-        Button notificationButton = new Button(notificationIcon, event -> {
-            getUI().ifPresent(ui -> ui.navigate(NotificationView.class));
-        });
-        Button postButton = new Button(postIcon, event -> {
-            getUI().ifPresent(ui -> ui.navigate(PostView.class));
-        });
+        Button homeButton = new Button(homeIcon, event -> getUI().ifPresent(ui -> ui.navigate(ExploreView.class)));
+
+        Button chatButton = new Button(chatIcon, event -> getUI().ifPresent(ui -> ui.navigate(ChatsMenuView.class)));
+
+        Button notificationButton = new Button(notificationIcon, event -> getUI().ifPresent(ui -> ui.navigate(NotificationView.class)));
+
+        Button postButton = new Button(postIcon, event -> getUI().ifPresent(ui -> ui.navigate(PostView.class)));
 
 
         homeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
@@ -91,9 +84,7 @@ public class ToolbarComponent extends AppLayout {
         Icon profileIcon = VaadinIcon.USER.create();
         profileIcon.addClassName(HEADER_ICON_CLASS_NAME);
 
-        Button profileButton = new Button(profileIcon, event -> {
-            getUI().ifPresent(ui -> ui.navigate(ProfileView.class,new RouteParameters("username","Carlos")));
-        });
+        Button profileButton = new Button(profileIcon, event -> getUI().ifPresent(ui -> ui.navigate(ProfileView.class,new RouteParameters("username","Carlos"))));
         profileButton.addClassName("drawer-button");
 
 
