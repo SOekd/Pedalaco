@@ -27,16 +27,28 @@ configurations {
 
 dependencies {
 	implementation('com.vaadin:vaadin-spring-boot-starter')
-
-	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('com.vaadin:vaadin-spring-boot-starter')
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation('in.virit:viritin:2.1.4')
+	implementation('com.flowingcode.vaadin.addons:google-maps:1.10.0')
+
+	compileOnly('org.projectlombok:lombok')
+	annotationProcessor('org.projectlombok:lombok')
+
+	runtimeOnly('com.h2database:h2')
+	runtimeOnly('org.mariadb.jdbc:mariadb-java-client')
+
+	implementation("org.jetbrains:annotations:24.0.1")
+
+    developmentOnly('org.springframework.boot:spring-boot-devtools')
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-
+	testImplementation ('org.springframework.boot:spring-boot-starter-test')
+	testImplementation ('org.springframework.security:spring-security-test')
 }
 
 dependencyManagement {
