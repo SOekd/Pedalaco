@@ -18,10 +18,4 @@ public class PedalacoApplication implements AppShellConfigurator {
 		SpringApplication.run(PedalacoApplication.class, args);
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void afterStartup() {
-
-
-	}
-
 }

@@ -38,6 +38,9 @@ public class Pedal {
     @OneToOne @JoinColumn(name = "author_id")
     private User author;
 
+    @ManyToMany @JoinTable(name = "pedal_participants")
+    private List<User> participants;
+
     @OneToMany
     private List<PedalMessage> messages;
 
