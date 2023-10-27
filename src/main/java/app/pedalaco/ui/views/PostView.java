@@ -2,13 +2,15 @@ package app.pedalaco.ui.views;
 
 import app.pedalaco.core.maps.MapsCredentialProvider;
 import app.pedalaco.core.pedal.Pedal;
+import app.pedalaco.core.pedal.PedalService;
 import app.pedalaco.core.security.AuthenticatedUser;
 import app.pedalaco.core.util.ImageHelper;
+import app.pedalaco.ui.MainView;
 import app.pedalaco.ui.components.ToolbarComponent;
 import com.flowingcode.vaadin.addons.googlemaps.GoogleMap;
-import com.flowingcode.vaadin.addons.googlemaps.GoogleMapPoint;
-import com.flowingcode.vaadin.addons.googlemaps.GoogleMapPolygon;
+import com.flowingcode.vaadin.addons.googlemaps.GoogleMapMarker;
 import com.flowingcode.vaadin.addons.googlemaps.LatLon;
+import com.flowingcode.vaadin.addons.googlemaps.Markers;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -23,13 +25,12 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.UploadI18N;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
-import org.springframework.security.core.parameters.P;
-import org.vaadin.firitin.components.upload.UploadFileHandler;
+import jakarta.annotation.security.PermitAll;
 import org.vaadin.firitin.geolocation.Geolocation;
 import org.vaadin.firitin.geolocation.GeolocationOptions;
 
@@ -37,28 +38,30 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Route(value = "post", layout = ToolbarComponent.class)
-@AnonymousAllowed
-public class PostView extends VerticalLayout {
+@PermitAll
+public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
     private final AuthenticatedUser authenticatedUser;
 
     private final MapsCredentialProvider mapsCredentialProvider;
 
+    private final PedalService pedalService;
+
     private Double locationX;
 
     private Double locationY;
 
-    public PostView(AuthenticatedUser authenticatedUser, MapsCredentialProvider mapsCredentialProvider) {
+    private GoogleMapMarker startMarker;
+    private GoogleMapMarker endMarker;
+
+    public PostView(AuthenticatedUser authenticatedUser, MapsCredentialProvider mapsCredentialProvider, PedalService pedalService) {
         this.authenticatedUser = authenticatedUser;
         this.mapsCredentialProvider = mapsCredentialProvider;
+        this.pedalService = pedalService;
         setAlignItems(Alignment.CENTER);
-
-        render();
     }
 
     private void render() {
@@ -190,32 +193,50 @@ public class PostView extends VerticalLayout {
         var post = new Button("Criar Pedal");
 
         VerticalLayout mapsLayout = new VerticalLayout();
-        Geolocation.getCurrentPosition(
-                event -> {
-                    GoogleMap gmaps = new GoogleMap(mapsCredentialProvider.getCredentials().toString(), null, null);
-                    gmaps.setMapType(GoogleMap.MapType.ROADMAP);
-                    gmaps.setCenter(new LatLon(event.getCoords().getLatitude(), event.getCoords().getLongitude()));
 
-                    gmaps.setHeight("400px");
-                    gmaps.setWidth("400px");
+        GoogleMap googleMap = new GoogleMap(mapsCredentialProvider.getCredentials().toString(), null, null);
+        googleMap.setMapType(GoogleMap.MapType.ROADMAP);
+        googleMap.disableStreetViewControl(true);
+        googleMap.disableMapTypeControl(true);
+        googleMap.setCenter(new LatLon(locationX, locationY));
 
-                    gmaps.setZoom(15);
+        googleMap.setHeight("400px");
+        googleMap.setWidth("400px");
 
-                    System.out.println(event.getCoords().getLatitude());
-                    System.out.println(event.getCoords().getLongitude());
+        googleMap.setZoom(15);
 
-                    getUI().ifPresent(ui -> ui.access(() -> {
-                        mapsLayout.add(gmaps);
-                    }));
-                },
-                browserError -> Notification.show("ERROR: " + browserError),
-                new GeolocationOptions(true, 2000, 7000)
-        );
+        googleMap.addClickListener(listener -> {
+            var x = listener.getLatitude();
+            var y = listener.getLongitude();
 
+            if (startMarker == null) {
+                startMarker =
+                        new GoogleMapMarker("Ínicio do Pedal", new LatLon(x, y), true, Markers.GREEN);
+
+                Notification notification = new Notification("Ínicio do pedal definido!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.open();
+
+                googleMap.addMarker(startMarker);
+            } else if (endMarker == null) {
+                endMarker = new GoogleMapMarker("Fim do Pedal", new LatLon(x, y), true, Markers.RED);
+
+                Notification notification = new Notification("Fim do pedal definido!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.open();
+
+                googleMap.addMarker(endMarker);
+            } else {
+                Notification notification = new Notification("Você já definiu o ínicio e o fim do pedal!\n\nClique no botão de apagar para definir novamente!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
+            }
+        });
+
+
+        mapsLayout.add(googleMap);
 
         post.addClickListener(listener -> {
-            System.out.println(mapsCredentialProvider.getCredentials().toString());
-
             if (!binder.isValid()) {
                 Notification notification = new Notification("Preencha todos os campos corretamente!", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -226,13 +247,77 @@ public class PostView extends VerticalLayout {
             var pedal = new Pedal();
             binder.writeBeanIfValid(pedal);
 
+
             var author = authenticatedUser.get().orElseThrow();
             pedal.setAuthor(author);
 
+            if (startMarker == null) {
+                Notification notification = new Notification("Você deve definir o ínicio do pedal no mapa!\n\nClique no mapa onde deseja que seja o ínicio do pedal!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
+                return;
+            }
+
+            if (endMarker == null) {
+                Notification notification = new Notification("Você deve definir o fim do pedal no mapa!\n\nClique no mapa onde deseja que seja o fim do pedal!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
+                return;
+            }
+
+            pedal.setStartX(startMarker.getPosition().getLat());
+            pedal.setStartY(startMarker.getPosition().getLon());
+
+            pedal.setEndX(endMarker.getPosition().getLat());
+            pedal.setEndY(endMarker.getPosition().getLon());
+
+            System.out.println("Pedal: " + pedal);
+
+            Notification notification = new Notification("Pedal criado com sucesso!", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+
+            pedalService.save(pedal);
+
+            getUI().ifPresent(ui -> ui.navigate(MainView.class));
         });
 
-        add(formLayout, upload, imageLayout, mapsLayout, post);
+        Button clearMap = new Button("Apagar localização do mapa");
+        clearMap.addClickListener(listener -> {
+            googleMap.removeMarker(startMarker);
+            googleMap.removeMarker(endMarker);
+
+            startMarker = null;
+            endMarker = null;
+
+            Notification notification = new Notification("Localização apagada!", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        });
+
+        add(formLayout, upload, imageLayout, clearMap, mapsLayout, post);
     }
 
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Geolocation.getCurrentPosition(
+                positionEvent -> {
+                    locationX = positionEvent.getCoords().getLatitude();
+                    locationY = positionEvent.getCoords().getLongitude();
+
+                    removeAll();
+                    render();
+                },
+                browserError -> getUI().ifPresent(ui -> {
+                    ui.navigate(MainView.class);
+
+                    Notification notification = Notification.show("Não foi possível obter sua localização!\nVerifique se você permitiu o acesso a sua localização!", 3000, Notification.Position.MIDDLE);
+                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    notification.open();
+
+                }),
+                new GeolocationOptions(true, 2000, 7000)
+        );
+    }
 }

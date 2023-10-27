@@ -1,12 +1,19 @@
 package app.pedalaco.ui;
 
+import app.pedalaco.core.pedal.Pedal;
+import app.pedalaco.core.pedal.PedalService;
+import app.pedalaco.core.security.AuthenticatedUser;
+import app.pedalaco.ui.components.PostCardComponent;
 import app.pedalaco.ui.components.ToolbarComponent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.PermitAll;
@@ -17,29 +24,24 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "home", layout = ToolbarComponent.class)
 @RouteAlias(value = "", layout = ToolbarComponent.class)
 @PermitAll
-public class MainView extends VerticalLayout {
+public class MainView extends VirtualList<Pedal> {
 
-    public MainView() {
-        // Use TextField for standard text input
-        TextField textField = new TextField("Your name");
+    private final AuthenticatedUser authenticatedUser;
 
-        // Button click listeners can be defined as lambda expressions
-//        GreetService greetService = new GreetService();
-        Button button = new Button("Say hello", e -> {
-            add(new H1("Hello, " + textField.getValue()));
-        });
+    private final PedalService pedalService;
 
-        // Theme variants give you predefined extra styles for components.
-        // Example: Primary button is more prominent look.
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    private ComponentRenderer<PostCardComponent, Pedal> renderer;
 
-        // You can specify keyboard shortcuts for buttons.
-        // Example: Pressing enter in this view clicks the Button.
-        button.addClickShortcut(Key.ENTER);
+    public MainView(AuthenticatedUser authenticatedUser, PedalService pedalService) {
+        this.authenticatedUser = authenticatedUser;
+        this.pedalService = pedalService;
 
-        // Use custom CSS classes to apply styling. This is defined in shared-styles.css.
-        addClassName("centered-content");
+        this.renderer = new ComponentRenderer<>(pedal -> new PostCardComponent(authenticatedUser.get().orElseThrow(), pedal));
 
-        add(textField, button);
+
     }
+
+
+
+
 }
