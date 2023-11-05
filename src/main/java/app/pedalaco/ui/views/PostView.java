@@ -211,7 +211,7 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
             if (startMarker == null) {
                 startMarker =
-                        new GoogleMapMarker("Ínicio do Pedal", new LatLon(x, y), true, Markers.GREEN);
+                        new GoogleMapMarker("Ínicio do Pedal", new LatLon(x, y), true, "https://i.imgur.com/6EYeiMu.png");
 
                 Notification notification = new Notification("Ínicio do pedal definido!", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -219,7 +219,7 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
                 googleMap.addMarker(startMarker);
             } else if (endMarker == null) {
-                endMarker = new GoogleMapMarker("Fim do Pedal", new LatLon(x, y), true, Markers.RED);
+                endMarker = new GoogleMapMarker("Fim do Pedal", new LatLon(x, y), true, "https://i.imgur.com/k6AqYGA.png");
 
                 Notification notification = new Notification("Fim do pedal definido!", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -270,8 +270,6 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
             pedal.setEndX(endMarker.getPosition().getLat());
             pedal.setEndY(endMarker.getPosition().getLon());
-
-            System.out.println("Pedal: " + pedal);
 
             Notification notification = new Notification("Pedal criado com sucesso!", 3000);
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);

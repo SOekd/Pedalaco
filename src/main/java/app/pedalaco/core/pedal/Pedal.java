@@ -31,6 +31,7 @@ public class Pedal {
 
     private String title;
 
+    @Lob
     private String description;
 
     private LocalDateTime date;

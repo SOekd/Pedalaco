@@ -1,5 +1,6 @@
 package app.pedalaco.core.user;
 
+import app.pedalaco.core.pedal.Pedal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

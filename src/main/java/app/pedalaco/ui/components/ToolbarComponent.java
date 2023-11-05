@@ -1,5 +1,6 @@
 package app.pedalaco.ui.components;
 
+import app.pedalaco.ui.MainView;
 import app.pedalaco.ui.views.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -48,7 +49,7 @@ public class ToolbarComponent extends AppLayout {
         postIcon.addClassName(HEADER_ICON_CLASS_NAME);
 
 
-        Button homeButton = new Button(homeIcon, event -> getUI().ifPresent(ui -> ui.navigate(ExploreView.class)));
+        Button homeButton = new Button(homeIcon, event -> getUI().ifPresent(ui -> ui.navigate(MainView.class)));
 
         Button chatButton = new Button(chatIcon, event -> getUI().ifPresent(ui -> ui.navigate(ChatsMenuView.class)));
 
