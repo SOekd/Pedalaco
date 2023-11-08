@@ -1,5 +1,6 @@
 package app.pedalaco.core.user;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public class UserService {
         return Optional.ofNullable(repository.findByEmail(email));
     }
 
+
     public User update(User entity) {
         return repository.save(entity);
     }
@@ -43,6 +45,10 @@ public class UserService {
 
     public Page<User> list(Pageable pageable, Specification<User> filter) {
         return repository.findAll(filter, pageable);
+    }
+
+    public List<User> listAll() {
+        return repository.findAll();
     }
 
     public int count() {

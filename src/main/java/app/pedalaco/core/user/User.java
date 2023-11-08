@@ -1,20 +1,20 @@
 package app.pedalaco.core.user;
 
 import app.pedalaco.core.pedal.Pedal;
+import app.pedalaco.core.privatemessage.PrivateChat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Entity
+@Getter @Setter
 @Table(name = "users")
 @Builder
 public class User {
@@ -44,6 +44,12 @@ public class User {
     @Column(length = 1000000)
     private byte[] profilePicture;
 
+    @OneToMany(mappedBy = "author")
+    private Set<PrivateChat> authoredChats;
+
+    @OneToMany(mappedBy = "receiver")
+    private Set<PrivateChat> receivedChats;
+
     public long getLevel() {
         // 10 * ((2 ^ n) - 1) = totalExp
         // onde n é o level, derivando:
@@ -57,5 +63,29 @@ public class User {
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return experiencePoints == user.experiencePoints && Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(username, user.username) && Objects.equals(name, user.name) && Objects.equals(hashedPassword, user.hashedPassword) && Objects.equals(biography, user.biography);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, username, name, hashedPassword, experiencePoints, biography);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", hashedPassword='" + hashedPassword + '\'' +
+                ", experiencePoints=" + experiencePoints +
+                ", biography='" + biography + '\'' +
+                '}';
+    }
 }

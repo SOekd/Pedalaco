@@ -46,23 +46,17 @@ public class MainView extends VirtualList<Pedal> implements BeforeEnterObserver 
 
         val renderer = new ComponentRenderer<PostCardComponent, Pedal>(pedal -> {
             val postCardComponent = new PostCardComponent(authenticatedUser.get().orElseThrow(), pedalService, pedal, mapsCredential.getApiKey(), () -> {
-                System.out.println("Render Callback");
                 getDataProvider().refreshAll();
             });
             observableMap.put(pedal.getId(), postCardComponent);
             return postCardComponent;
         });
+
         setRenderer(renderer);
 
         Geolocation.watchPosition(
-                positionEvent -> {
-                    System.out.println("Latitude: " + positionEvent.getCoords().getLatitude());
-                    System.out.println("Longitude: " + positionEvent.getCoords().getLongitude());
-                    System.out.println("MapSize: " + observableMap.size());
-                    observableMap.values().stream().parallel().forEach(it -> it.updateMarker(positionEvent.getCoords().getLatitude(), positionEvent.getCoords().getLongitude()));
-                },
-                browserError -> {
-                    System.out.println("Error: " + browserError);
+                positionEvent -> observableMap.values().stream().parallel().forEach(it -> it.updateMarker(positionEvent.getCoords().getLatitude(), positionEvent.getCoords().getLongitude())),
+                unused -> {
                 },
                 new GeolocationOptions(true, 2000, 7000)
         );
