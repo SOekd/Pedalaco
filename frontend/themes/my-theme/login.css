@@ -1,0 +1,12 @@
+.register-form{
+    padding: 20px;
+    background-color:#2C3D52;
+    left: 50%;
+    top: 20%;
+    height: fit-content;
+    width: 200px;
+}
+
+.register-layout{
+    align-items: center;
+}

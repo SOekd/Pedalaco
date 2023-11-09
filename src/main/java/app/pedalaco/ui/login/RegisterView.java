@@ -84,9 +84,10 @@ public class RegisterView extends VerticalLayout implements BeforeEnterObserver 
                 .bind(user -> passwordToConfirm.get(), (user, password) -> passwordToConfirm.set(password));
 
 
-        FormLayout formLayout = new FormLayout();
-        formLayout.add(email, username, name, passwordField, passwordConfirmationField);
-        formLayout.setColspan(name, 2);
+        FormLayout registerForm = new FormLayout();
+
+        registerForm.add(email, username, name, passwordField, passwordConfirmationField);
+        registerForm.setColspan(name, 2);
 
         var registerButton = new Button("Registrar");
 
@@ -120,9 +121,13 @@ public class RegisterView extends VerticalLayout implements BeforeEnterObserver 
 
         H2 title = new H2("REGISTRAR");
 
-        add(title, formLayout, registerButton);
+        VerticalLayout formLayout = new VerticalLayout(title, registerForm, registerButton);
+        formLayout.addClassName("register-form");
+
+        Button loginButton = new Button("Entrar",listener -> getUI().ifPresent(ui -> ui.navigate("login")));
+        add(formLayout, loginButton);
         setPadding(true);
-        addClassName("register-form");
+        addClassName("register-layout");
     }
 
     @Override

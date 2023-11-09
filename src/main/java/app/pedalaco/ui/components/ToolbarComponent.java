@@ -1,118 +1,114 @@
 package app.pedalaco.ui.components;
 
+import app.pedalaco.core.security.AuthenticatedUser;
 import app.pedalaco.ui.MainView;
 import app.pedalaco.ui.views.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.avatar.AvatarGroup;
+import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouteParameters;
 
 public class ToolbarComponent extends AppLayout {
-
-    // Variavel criada apenas para testes
-    // lembrar de deletar apos completar a integração com o banco de dados
-
-    private static final String HEADER_ICON_CLASS_NAME = "header-icon";
-    private static final String DRAWER_ICON_CLASS_NAME = "drawer-icon";
-
-
+    private static final String NAVBAR_ICON_CLASS_NAME = "header-icon";
+    private static final String NAVBAR_BUTTON_CLASS_NAME = "navbar-button";
     private final Span debugText = new Span();
+    private final AuthenticatedUser authenticatedUser;
 
 
-    public ToolbarComponent(){
+    public ToolbarComponent(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
         createHeader();
         createDrawer();
     }
 
-    private void createHeader(){
+    private void createHeader() {
         HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), new H1("Pedalaço"));
-        addToNavbar(header,debugText);
-        Icon homeIcon = VaadinIcon.HOME.create();
-        Icon chatIcon = VaadinIcon.CHAT.create();
-        Icon notificationIcon = VaadinIcon.BELL_O.create();
-        Icon postIcon = VaadinIcon.PLUS.create();
+        addToNavbar(header, debugText);
 
-        homeIcon.addClassName(HEADER_ICON_CLASS_NAME);
-        chatIcon.addClassName(HEADER_ICON_CLASS_NAME);
-        notificationIcon.addClassName(HEADER_ICON_CLASS_NAME);
-        postIcon.addClassName(HEADER_ICON_CLASS_NAME);
+        Button homeButton = createNavbarButton(VaadinIcon.HOME.create(), ButtonVariant.LUMO_TERTIARY, MainView.class);
+        Button groupButton = createNavbarButton(VaadinIcon.GROUP.create(), ButtonVariant.LUMO_TERTIARY, MainView.class);
+        Button chatButton = createNavbarButton(VaadinIcon.CHAT.create(), ButtonVariant.LUMO_TERTIARY, ChatsMenuView.class);
+        Button notificationButton = createNavbarButton(VaadinIcon.BELL_O.create(), ButtonVariant.LUMO_TERTIARY, NotificationView.class);
+        Button postButton = createNavbarButton(VaadinIcon.PLUS.create(), ButtonVariant.LUMO_PRIMARY, PostView.class);
 
-
-        Button homeButton = new Button(homeIcon, event -> getUI().ifPresent(ui -> ui.navigate(MainView.class)));
-
-        Button chatButton = new Button(chatIcon, event -> getUI().ifPresent(ui -> ui.navigate(ChatsMenuView.class)));
-
-        Button notificationButton = new Button(notificationIcon, event -> getUI().ifPresent(ui -> ui.navigate(NotificationView.class)));
-
-        Button postButton = new Button(postIcon, event -> getUI().ifPresent(ui -> ui.navigate(PostView.class)));
-
-
-        homeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        chatButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        notificationButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        postButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        postButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-
-        homeButton.addClassName("drawer-button");
-        chatButton.addClassName("drawer-button");
-        notificationButton.addClassName("drawer-button");
-        postButton.addClassName("drawer-button");
-
-        HorizontalLayout navbar = new HorizontalLayout(homeButton, postButton, chatButton, notificationButton);
+        HorizontalLayout navbar = new HorizontalLayout(groupButton, homeButton, postButton, chatButton, notificationButton);
+        addToNavbar(true, navbar);
         navbar.addClassName("navbar");
-        navbar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
-        navbar.setAlignItems(FlexComponent.Alignment.CENTER);
-        addToNavbar(true,navbar);
     }
 
     private void createDrawer() {
-        Image profilePicture = new Image();
-        profilePicture.setSrc("https://i.imgur.com/xxbEkOM.png");
-        profilePicture.setAlt("Imagem de usúario anônima");
+        var user = authenticatedUser.get().orElseThrow();
 
-        Icon profileIcon = VaadinIcon.USER.create();
-        profileIcon.addClassName(HEADER_ICON_CLASS_NAME);
+        Avatar profilePicture = new Avatar(user.getName());
+        profilePicture.setAbbreviation("GK");
+        profilePicture.addClassName("drawer-profile-userphoto-image");
+        Button profileButton = new Button(profilePicture, event -> getUI().ifPresent(ui -> ui.navigate(ProfileView.class, new RouteParameters("username", user.getUsername()))));
+        profileButton.addClassName("drawer-profile-userphoto");
 
-        Button profileButton = new Button(profileIcon, event -> getUI().ifPresent(ui -> ui.navigate(ProfileView.class,new RouteParameters("username","Carlos"))));
-        profileButton.addClassName("drawer-button");
+        H2 username = new H2(user.getUsername());
+        username.addClassName("drawer-profile-username");
 
+        H2 userLevel = new H2(String.valueOf(user.getLevel()));
+        userLevel.addClassName("drawer-profile-userlevel");
 
-        H2 username = new H2("Crimenelson");
-        H2 level = new H2("1");
+        Image banner = new Image();
+        banner.addClassName("drawer-profile-banner");
+        FlexLayout profileLayout = new FlexLayout(banner, profileButton, username, userLevel);
+        profileLayout.addClassName("drawer-profile");
 
-        FlexLayout profileLayout = new FlexLayout(profileButton,username,level);
+        H3 groupLabel = new H3("Groups:");
+        groupLabel.addClassName("drawer-group-label");
 
-        Button group1 = new Button("Grupo 1");
-        group1.setPrefixComponent(VaadinIcon.GROUP.create());
-        Button group2 = new Button("Grupo 2");
-        group2.setPrefixComponent(VaadinIcon.GROUP.create());
-        Button group3 = new Button("Grupo 3");
-        group3.setPrefixComponent(VaadinIcon.GROUP.create());
-        Button group4 = new Button("Grupo 4");
-        group4.setPrefixComponent(VaadinIcon.GROUP.create());
-        Button group5 = new Button("Grupo 5");
-        group5.setPrefixComponent(VaadinIcon.GROUP.create());
+        Icon configurationIcon = VaadinIcon.COG.create();
+        Icon logoutIcon = VaadinIcon.EXIT.create();
 
+        Button configurationButton = new Button("Configurations", event -> getUI().ifPresent(ui -> ui.navigate(ConfigurationView.class)));
+        configurationButton.setPrefixComponent(configurationIcon);
 
+        Button logoutButton = new Button("Log out");
+        logoutButton.setPrefixComponent(logoutIcon);
 
-        HorizontalLayout groupLayout =  new HorizontalLayout(group1,group2,group3,group4,group5);
-        groupLayout.addClassName("drawer-group-container");
+        configurationButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        logoutButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        profileButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        configurationButton.addClassName("drawer-configuration-button");
+        logoutButton.addClassName("drawer-logout-button");
 
-        VerticalLayout drawer = new VerticalLayout(profileLayout,groupLayout);
+        VerticalLayout topLayout = new VerticalLayout(profileLayout);
+        topLayout.addClassName("drawer-top-layout");
+        VerticalLayout bottomLayout = new VerticalLayout(configurationButton, logoutButton);
+        bottomLayout.addClassName("drawer-bottom-layout");
+        VerticalLayout drawer = new VerticalLayout(topLayout, bottomLayout);
+        drawer.addClassName("drawer");
         addToDrawer(drawer);
     }
+
+    private Button createGroupButton(String name) {
+        Icon groupIcon = VaadinIcon.GROUP.create();
+        groupIcon.addClassName("drawer-icon");
+        Button groupButton = new Button(name);
+        groupButton.setPrefixComponent(groupIcon);
+        groupButton.addClassName("drawer-group-button");
+        return groupButton;
+    }
+
+    private Button createNavbarButton(Icon icon, ButtonVariant buttonVariant, Class Destination) {
+        icon.addClassName(NAVBAR_ICON_CLASS_NAME);
+        Button navbarButton = new Button(icon);
+        navbarButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate(Destination)));
+        navbarButton.addThemeVariants(buttonVariant);
+        navbarButton.addClassName(NAVBAR_BUTTON_CLASS_NAME);
+        return navbarButton;
+    }
+
 }

@@ -4,7 +4,7 @@
 */
 
 /* Example: CSS class name to center align the content . */
-
+@import "login.css";
 @import "toolbar.css";
 .centered-content {
   margin: 0 auto;

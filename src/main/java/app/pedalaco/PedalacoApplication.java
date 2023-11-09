@@ -17,5 +17,4 @@ public class PedalacoApplication implements AppShellConfigurator {
 	public static void main(String[] args) {
 		SpringApplication.run(PedalacoApplication.class, args);
 	}
-
 }

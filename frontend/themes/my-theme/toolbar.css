@@ -1,21 +1,142 @@
-.drawer{
-    align-items: center;
+
+
+.navbar{
+    width: 100%;
     justify-content: space-between;
-    padding: 20px;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #2C3D52;
 }
 
-.drawer-icon{
-    font-size: 45px;
-}
-.drawer-button{
+.navbar-button{
     aspect-ratio: 1/1;
-    width: fit-content;
-    height: fit-content;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    justify-content: center;
+    text-align:center;
 }
 .header-icon{
     font-size: 45px;
 }
 
+.drawer{
+    padding: 0;
+    align-items:center;
+    justify-content: space-between;
+    height:100%;
+    width:100%;
+    margin:0;
+}
+
+.drawer-group{
+    padding:10px;
+    position: absolute;
+    width:100%;
+    top:30%;
+    height: 200px;
+    align-items:center;
+}
+
+.drawer-group-label{
+    width: 100%;
+    text-align:center;
+}
+
+
+
 .drawer-group-container{
-    background-color: grey;
+    background-color: #1d293a;
+    overflow: scroll;
+    width: 95%;
+    height: 150px;
+    padding:10px;
+    align-items:center;
+}
+
+.drawer-icon{
+    font-size:30px;
+}
+
+.drawer-current-groups{
+    height:100%;
+    aspect-ratio:100%;
+}
+
+.drawer-profile-username{
+    position: absolute;
+    top:22%;
+    width:100%;
+    text-align:center;
+}
+
+.drawer-profile-userlevel{
+    position: absolute;
+    right:10px;
+    top: 15%;
+    width:30px;
+    height:30px;
+    Background-color: #233348;
+    border: 5px solid #233348;
+    border-radius: 100%;
+    transform: translate(-50%,-50%);
+    text-align:center;
+}
+.drawer-profile-userphoto{
+    position: absolute;
+    left:50%;
+    border: 5px solid  #233348;
+    background-color: #233348;
+    width:80px;
+    height:80px;
+    border-radius: 100%;
+    font-size: 45px;
+    transform: translate(-50%,-50%);
+    top: 15%;
+    z-index: 2;
+}
+
+.drawer-profile-userphoto-image{
+    position:absolute;
+    transform: translate(-50%,-50%);
+    width:80px;
+    height:80px;
+    z-index: 3;
+}
+
+.drawer-profile-banner{
+    position:absolute;
+    width: 100%;
+    height: 15%;
+    background-color: black;
+    border: none;
+}
+
+.drawer-profile{
+    display:flex;
+    width: 100%;
+    height: 200px;
+    top:0;
+}
+
+.drawer-configuration-button{
+    width:90%;
+    text-align:center;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color:#1d293a;
+}
+
+.drawer-logout-button{
+    width:90%;
+    text-align:center;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.drawer-top-layout{
+    padding: 0;
+}
+.drawer-bottom-layout{
+    padding: 30px 0;
 }
