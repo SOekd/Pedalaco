@@ -81,12 +81,17 @@ public class MainView extends VirtualList<Pedal> implements BeforeEnterObserver 
                 browserError -> getUI().ifPresent(ui -> {
                    if ("Timeout expired".equals(browserError))
                        return;
-                    authenticatedUser.logout();
-                    ui.navigate(LoginView.class);
 
-                    Notification notification = Notification.show("Não foi possível obter sua localização!\nVerifique se você permitiu o acesso a sua localização!\n\nQuem não permitir a localização não poderá utilizar essa plataforma!", 3000, Notification.Position.MIDDLE);
-                    notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    notification.open();
+                    System.out.println("Error: " + browserError);
+                    authenticatedUser.logout();
+
+                    ui.access(() -> {
+                        Notification notification = Notification.show("Não foi possível obter sua localização!\nVerifique se você permitiu o acesso a sua localização!\n\nQuem não permitir a localização não poderá utilizar essa plataforma!", 3000, Notification.Position.MIDDLE);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.open();
+
+                        ui.navigate(LoginView.class);
+                    });
 
                 }),
                 new GeolocationOptions(true, 2000, 7000)

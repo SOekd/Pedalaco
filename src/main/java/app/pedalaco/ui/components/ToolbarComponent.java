@@ -1,8 +1,10 @@
 package app.pedalaco.ui.components;
 
 import app.pedalaco.core.security.AuthenticatedUser;
+import app.pedalaco.core.user.User;
 import app.pedalaco.ui.MainView;
 import app.pedalaco.ui.views.*;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -13,6 +15,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,11 +25,11 @@ public class ToolbarComponent extends AppLayout {
     private static final String NAVBAR_ICON_CLASS_NAME = "header-icon";
     private static final String NAVBAR_BUTTON_CLASS_NAME = "navbar-button";
     private final Span debugText = new Span();
-    private final AuthenticatedUser authenticatedUser;
+//    private final AuthenticatedUser authenticatedUser;
 
 
-    public ToolbarComponent(AuthenticatedUser authenticatedUser) {
-        this.authenticatedUser = authenticatedUser;
+    public ToolbarComponent() {
+//        this.authenticatedUser = authenticatedUser;
         createHeader();
         createDrawer();
     }
@@ -47,7 +50,12 @@ public class ToolbarComponent extends AppLayout {
     }
 
     private void createDrawer() {
-        var user = authenticatedUser.get().orElseThrow();
+        var user = User.builder()
+                .name("Gustavo Kamradt")
+                .biography("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                .username("kamradt")
+                .hashedPassword("123")
+                .build();
 
         Avatar profilePicture = new Avatar(user.getName());
         profilePicture.setAbbreviation("GK");
@@ -84,6 +92,11 @@ public class ToolbarComponent extends AppLayout {
         configurationButton.addClassName("drawer-configuration-button");
         logoutButton.addClassName("drawer-logout-button");
 
+        logoutButton.addClickListener(event -> {
+//            o correto é usar o auth user aqui, mas ainda é preciso pensar em como instanciar
+//            getUI().ifPresent(ui -> ui.navigate(LoginForm.class));
+        });
+
         VerticalLayout topLayout = new VerticalLayout(profileLayout);
         topLayout.addClassName("drawer-top-layout");
         VerticalLayout bottomLayout = new VerticalLayout(configurationButton, logoutButton);
@@ -102,10 +115,10 @@ public class ToolbarComponent extends AppLayout {
         return groupButton;
     }
 
-    private Button createNavbarButton(Icon icon, ButtonVariant buttonVariant, Class Destination) {
+    private Button createNavbarButton(Icon icon, ButtonVariant buttonVariant, Class<? extends Component> destination) {
         icon.addClassName(NAVBAR_ICON_CLASS_NAME);
         Button navbarButton = new Button(icon);
-        navbarButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate(Destination)));
+        navbarButton.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate(destination)));
         navbarButton.addThemeVariants(buttonVariant);
         navbarButton.addClassName(NAVBAR_BUTTON_CLASS_NAME);
         return navbarButton;

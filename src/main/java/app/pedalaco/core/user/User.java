@@ -44,11 +44,6 @@ public class User {
     @Column(length = 1000000)
     private byte[] profilePicture;
 
-    @OneToMany(mappedBy = "author")
-    private Set<PrivateChat> authoredChats;
-
-    @OneToMany(mappedBy = "receiver")
-    private Set<PrivateChat> receivedChats;
 
     public long getLevel() {
         // 10 * ((2 ^ n) - 1) = totalExp

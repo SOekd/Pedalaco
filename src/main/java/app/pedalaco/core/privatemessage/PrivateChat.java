@@ -21,13 +21,8 @@ public class PrivateChat {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    private User author;
-
-    @ManyToOne
-    @JoinColumn(name = "receiver_id")
-    private User receiver;
+    @ManyToMany
+    private List<User> participants;
 
     @OneToMany
     private List<PrivateMessage> messages;

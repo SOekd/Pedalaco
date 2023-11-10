@@ -46,35 +46,35 @@ public class ChatsMenuView extends VerticalLayout {
     private void renderOpenChats() {
         val user = authenticatedUser.get().orElseThrow();
 
-        List<PrivateChat> chats = Stream.concat(user.getReceivedChats().stream(), user.getAuthoredChats().stream())
-                .sorted(Comparator.comparing(cht -> cht.getLastMessage().getSentAt()))
-                .collect(Collectors.toList());
-
-        VirtualList<PrivateChat> virtualList = new VirtualList<>();
-
-        val renderer = new ComponentRenderer<Component, PrivateChat>(chat -> {
-
-            val chatLayout = new HorizontalLayout();
-
-            val avatar = new Avatar();
-
-            User userOnAvatar;
-            if (chat.getAuthor().equals(user)) {
-                userOnAvatar = chat.getReceiver();
-            } else {
-                userOnAvatar = chat.getAuthor();
-            }
-
-            avatar.setName(userOnAvatar.getUsername());
-            if (userOnAvatar.getProfilePicture() != null) {
-                avatar.setImageResource(new StreamResource(userOnAvatar.getName() + ".png", () -> new ByteArrayInputStream(userOnAvatar.getProfilePicture())));
-            }
-
-            return chatLayout;
-        });
-
-        virtualList.setItems(chats);
-        virtualList.setRenderer(renderer);
+//        List<PrivateChat> chats = Stream.concat(user.getReceivedChats().stream(), user.getAuthoredChats().stream())
+//                .sorted(Comparator.comparing(cht -> cht.getLastMessage().getSentAt()))
+//                .collect(Collectors.toList());
+//
+//        VirtualList<PrivateChat> virtualList = new VirtualList<>();
+//
+//        val renderer = new ComponentRenderer<Component, PrivateChat>(chat -> {
+//
+//            val chatLayout = new HorizontalLayout();
+//
+//            val avatar = new Avatar();
+//
+//            User userOnAvatar;
+//            if (chat.getAuthor().equals(user)) {
+//                userOnAvatar = chat.getReceiver();
+//            } else {
+//                userOnAvatar = chat.getAuthor();
+//            }
+//
+//            avatar.setName(userOnAvatar.getUsername());
+//            if (userOnAvatar.getProfilePicture() != null) {
+//                avatar.setImageResource(new StreamResource(userOnAvatar.getName() + ".png", () -> new ByteArrayInputStream(userOnAvatar.getProfilePicture())));
+//            }
+//
+//            return chatLayout;
+//        });
+//
+//        virtualList.setItems(chats);
+//        virtualList.setRenderer(renderer);
 
     }
 
