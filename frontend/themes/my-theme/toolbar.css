@@ -43,8 +43,6 @@
     text-align:center;
 }
 
-
-
 .drawer-group-container{
     background-color: #1d293a;
     overflow: scroll;
@@ -81,6 +79,7 @@
     border-radius: 100%;
     transform: translate(-50%,-50%);
     text-align:center;
+    justify-content:center;
 }
 .drawer-profile-userphoto{
     position: absolute;
@@ -94,6 +93,7 @@
     transform: translate(-50%,-50%);
     top: 15%;
     z-index: 2;
+    font-size:larger;
 }
 
 .drawer-profile-userphoto-image{
@@ -102,6 +102,7 @@
     width:80px;
     height:80px;
     z-index: 3;
+    font-size:larger;
 }
 
 .drawer-profile-banner{

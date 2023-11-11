@@ -1,0 +1,53 @@
+.post-header{
+    background-color:#0c6ce9;
+}
+
+.post-map-label{
+    width:100%;
+    margin:16px;
+    text-align:center;
+}
+
+.post-content-label{
+    width:100%;
+    margin:16px;
+    text-align:center;
+}
+
+.post-content{
+    overflow: hidden;
+    background-color:#2c3d52;
+    max-width:100%;
+    align-items:center;
+    border-radius:20px;
+    padding:16px;
+}
+
+
+.post-map-display{
+   padding: 0;
+   width:400px;
+   height:400px;
+}
+
+.post-map-button{
+    width:100%;
+    background-color:#35465b;
+}
+
+.post-map{
+    overflow: hidden;
+    background-color:#2c3d52;
+    width:100%;
+    height: 100%;
+    align-items:center;
+    border-radius:20px;
+    padding:16;
+}
+
+.post-post-button{
+    width:100%;
+    height: 100%;
+    align-items:center;
+}
+

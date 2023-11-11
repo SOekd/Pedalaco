@@ -10,8 +10,8 @@ import app.pedalaco.ui.components.ToolbarComponent;
 import com.flowingcode.vaadin.addons.googlemaps.GoogleMap;
 import com.flowingcode.vaadin.addons.googlemaps.GoogleMapMarker;
 import com.flowingcode.vaadin.addons.googlemaps.LatLon;
-import com.flowingcode.vaadin.addons.googlemaps.Markers;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
@@ -65,11 +65,12 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private void render() {
-        add(
+        VerticalLayout postHeader = new VerticalLayout(
                 new H2("Criar Pedal"),
                 new Paragraph("Você está na página de criação de pedal!")
         );
-
+        postHeader.addClassName("post-header");
+        add(postHeader);
         renderForm();
     }
 
@@ -91,8 +92,8 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
         descriptionField.setMaxLength(1000);
         descriptionField.setPlaceholder("Digite a descrição do pedal");
         descriptionField.setClearButtonVisible(true);
-        descriptionField.setHeight("230px");
-        descriptionField.setWidth("180px");
+        descriptionField.setHeight("250px");
+        descriptionField.setWidth("160px");
         binder.forField(descriptionField)
                 .asRequired("A descrição é obrigatória!")
                 .withValidator(description -> description.length() >= 20, "A descrição deve ter pelo menos 20 caracteres!")
@@ -158,7 +159,6 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
         upload.addDetachListener(listener -> imageLayout.removeAll());
 
-
         upload.setAcceptedFileTypes("image/jpeg", "image/png");
 
         upload.setMaxFileSize(5 * 1024 * 1024);
@@ -188,11 +188,17 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
 
         upload.setI18n(i18n);
 
-        formLayout.add(titleField, descriptionField, dateField);
+        H2 formLabel = new H2("info");
+        formLabel.addClassName("post-content-label");
+        formLayout.add(formLabel,titleField, descriptionField, dateField, upload, imageLayout);
+        formLayout.addClassName("post-content");
 
         var post = new Button("Criar Pedal");
+        post.addClassName("post-post-button");
+        post.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        VerticalLayout mapsLayout = new VerticalLayout();
+        VerticalLayout mapDisplay = new VerticalLayout();
+        mapDisplay.addClassName("post-map-display");
 
         GoogleMap googleMap = new GoogleMap(mapsCredentialProvider.getCredentials().toString(), null, null);
         googleMap.setMapType(GoogleMap.MapType.ROADMAP);
@@ -200,9 +206,8 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
         googleMap.disableMapTypeControl(true);
         googleMap.setCenter(new LatLon(locationX, locationY));
 
-        googleMap.setHeight("400px");
-        googleMap.setWidth("400px");
-
+        googleMap.setHeight("300px");
+        googleMap.setWidth("300px");
         googleMap.setZoom(15);
 
         googleMap.addClickListener(listener -> {
@@ -233,8 +238,8 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
             }
         });
 
-
-        mapsLayout.add(googleMap);
+        mapDisplay.add(googleMap);
+        googleMap.setSizeFull();
 
         post.addClickListener(listener -> {
             if (!binder.isValid()) {
@@ -280,6 +285,25 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
             getUI().ifPresent(ui -> ui.navigate(MainView.class));
         });
 
+        H2 mapLabel = new H2("Criar Rota");
+        mapLabel.addClassName("post-map-label");
+        Button clearStartPoint = new Button("Apagar Ponto inicial", event -> {
+            googleMap.removeMarker(startMarker);
+            startMarker = null;
+            Notification notification = new Notification("Localização apagada!", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        });
+        clearStartPoint.addClassName("post-map-button");
+        Button clearEndPoint = new Button("Apagar Ponto Final", event -> {
+            googleMap.removeMarker(endMarker);
+            endMarker = null;
+            Notification notification = new Notification("Localização apagada!", 3000);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        });
+        clearEndPoint.addClassName("post-map-button");
+                /*
         Button clearMap = new Button("Apagar localização do mapa");
         clearMap.addClickListener(listener -> {
             googleMap.removeMarker(startMarker);
@@ -292,10 +316,11 @@ public class PostView extends VerticalLayout implements BeforeEnterObserver {
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             notification.open();
         });
-
-        add(formLayout, upload, imageLayout, clearMap, mapsLayout, post);
+        */
+        VerticalLayout mapsLayout = new VerticalLayout(mapLabel,clearStartPoint,clearEndPoint,mapDisplay);
+        mapsLayout.addClassName("post-map");
+        add(formLayout, mapsLayout, post);
     }
-
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
