@@ -2,14 +2,20 @@ package app.pedalaco.ui.components;
 
 import app.pedalaco.core.pedal.Pedal;
 import app.pedalaco.core.pedal.PedalService;
+import app.pedalaco.core.privatemessage.PrivateMessagePersister;
 import app.pedalaco.core.user.User;
 import com.flowingcode.vaadin.addons.googlemaps.GoogleMap;
 import com.flowingcode.vaadin.addons.googlemaps.GoogleMapMarker;
 import com.flowingcode.vaadin.addons.googlemaps.LatLon;
+import com.vaadin.collaborationengine.CollaborationMessageInput;
+import com.vaadin.collaborationengine.CollaborationMessageList;
+import com.vaadin.collaborationengine.MessageManager;
+import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -25,6 +31,7 @@ public class PostCardComponent extends VerticalLayout {
 
     private final PedalService pedalService;
 
+    private final PrivateMessagePersister messagePersister;
     private final Pedal pedal;
 
 
@@ -32,10 +39,12 @@ public class PostCardComponent extends VerticalLayout {
     private final Runnable renderCallback;
 
     private GoogleMapMarker marker;
+    private CollaborationMessageList list;
 
-    public PostCardComponent(User user, PedalService pedalService, Pedal pedal, String mapKey, Runnable renderCallback) {
+    public PostCardComponent(User user, PedalService pedalService, PrivateMessagePersister messagePersister, Pedal pedal, String mapKey, Runnable renderCallback) {
         this.user = user;
         this.pedalService = pedalService;
+        this.messagePersister = messagePersister;
         this.pedal = pedal;
         this.mapKey = mapKey;
         this.renderCallback = renderCallback;
@@ -90,6 +99,45 @@ public class PostCardComponent extends VerticalLayout {
 
         Button comments = new Button(VaadinIcon.COMMENTS.create());
         comments.setText("Comentar");
+        comments.addClickListener(listener -> {
+
+            Dialog dialog = new Dialog();
+
+            dialog.setMaxWidth("100%");
+            dialog.setMaxHeight("100%");
+
+            dialog.setMinWidth("100%");
+            dialog.setMinHeight("100%");
+            dialog.setCloseOnEsc(true);
+
+            dialog.setModal(true);
+
+            VerticalLayout dialogLayout = new VerticalLayout();
+
+            list = new CollaborationMessageList(new UserInfo(String.valueOf(user.getId()), user.getName()), "chat/" + pedal.getId());
+            list.setSizeFull();
+
+            CollaborationMessageInput input = new CollaborationMessageInput(list);
+            input.setWidthFull();
+            VerticalLayout chatContainer = new VerticalLayout();
+            chatContainer.addClassNames(LumoUtility.Flex.AUTO, LumoUtility.Overflow.HIDDEN);
+
+            new MessageManager(this, new UserInfo(String.valueOf(user.getId()), user.getName()), "chat/" + pedal.getId(), messagePersister);
+
+            chatContainer.add(list, input);
+            dialogLayout.add(chatContainer);
+            dialogLayout.setSizeFull();
+            dialogLayout.expand(list);
+
+            dialogLayout.setPadding(false);
+            dialogLayout.setMargin(false);
+
+            dialogLayout.setMinHeight("100%");
+            dialogLayout.setMinWidth("100%");
+            dialog.add(dialogLayout);
+
+            dialog.open();
+        });
         horizontalLayout.add(comments);
 
         if (pedal.getAuthor().getId().equals(user.getId())) {

@@ -3,6 +3,7 @@ package app.pedalaco.ui;
 import app.pedalaco.core.maps.MapsCredential;
 import app.pedalaco.core.pedal.Pedal;
 import app.pedalaco.core.pedal.PedalService;
+import app.pedalaco.core.privatemessage.PrivateMessagePersister;
 import app.pedalaco.core.security.AuthenticatedUser;
 import app.pedalaco.ui.components.PostCardComponent;
 import app.pedalaco.ui.components.ToolbarComponent;
@@ -39,15 +40,13 @@ public class MainView extends VirtualList<Pedal> implements BeforeEnterObserver 
     private final AuthenticatedUser authenticatedUser;
 
 
-    public MainView(AuthenticatedUser authenticatedUser, PedalService pedalService, MapsCredential mapsCredential) {
+    public MainView(AuthenticatedUser authenticatedUser, PedalService pedalService, MapsCredential mapsCredential, PrivateMessagePersister messagePersister) {
         this.authenticatedUser = authenticatedUser;
 
         WeakHashMap<UUID, PostCardComponent> observableMap = new WeakHashMap<>();
 
         val renderer = new ComponentRenderer<PostCardComponent, Pedal>(pedal -> {
-            val postCardComponent = new PostCardComponent(authenticatedUser.get().orElseThrow(), pedalService, pedal, mapsCredential.getApiKey(), () -> {
-                getDataProvider().refreshAll();
-            });
+            val postCardComponent = new PostCardComponent(authenticatedUser.get().orElseThrow(), pedalService, messagePersister, pedal, mapsCredential.getApiKey(), () -> getDataProvider().refreshAll());
             observableMap.put(pedal.getId(), postCardComponent);
             return postCardComponent;
         });
@@ -79,8 +78,8 @@ public class MainView extends VirtualList<Pedal> implements BeforeEnterObserver 
                 positionEvent -> {
                 },
                 browserError -> getUI().ifPresent(ui -> {
-                   if ("Timeout expired".equals(browserError))
-                       return;
+                    if ("Timeout expired".equals(browserError))
+                        return;
 
                     System.out.println("Error: " + browserError);
                     authenticatedUser.logout();

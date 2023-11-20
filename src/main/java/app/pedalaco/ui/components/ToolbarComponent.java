@@ -19,19 +19,22 @@ import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouteParameters;
 
+@PageTitle("layout")
 public class ToolbarComponent extends AppLayout {
     private static final String NAVBAR_ICON_CLASS_NAME = "header-icon";
     private static final String NAVBAR_BUTTON_CLASS_NAME = "navbar-button";
     private final Span debugText = new Span();
-//    private final AuthenticatedUser authenticatedUser;
+    private final AuthenticatedUser authenticatedUser;
 
 
-    public ToolbarComponent() {
-//        this.authenticatedUser = authenticatedUser;
+    public ToolbarComponent(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
         createHeader();
         createDrawer();
+
     }
 
     private void createHeader() {
@@ -39,12 +42,12 @@ public class ToolbarComponent extends AppLayout {
         addToNavbar(header, debugText);
 
         Button homeButton = createNavbarButton(VaadinIcon.HOME.create(), ButtonVariant.LUMO_TERTIARY, MainView.class);
-        Button groupButton = createNavbarButton(VaadinIcon.GROUP.create(), ButtonVariant.LUMO_TERTIARY, MainView.class);
+        Button currentPedal = createNavbarButton(VaadinIcon.GROUP.create(), ButtonVariant.LUMO_TERTIARY, CurrentPedalView.class);
         Button chatButton = createNavbarButton(VaadinIcon.CHAT.create(), ButtonVariant.LUMO_TERTIARY, ChatsMenuView.class);
         Button notificationButton = createNavbarButton(VaadinIcon.BELL_O.create(), ButtonVariant.LUMO_TERTIARY, NotificationView.class);
         Button postButton = createNavbarButton(VaadinIcon.PLUS.create(), ButtonVariant.LUMO_PRIMARY, PostView.class);
 
-        HorizontalLayout navbar = new HorizontalLayout(groupButton, homeButton, postButton, chatButton, notificationButton);
+        HorizontalLayout navbar = new HorizontalLayout(homeButton, currentPedal, postButton, chatButton, notificationButton);
         addToNavbar(true, navbar);
         navbar.addClassName("navbar");
     }

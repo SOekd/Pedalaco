@@ -1,12 +1,9 @@
 package app.pedalaco.core.user;
 
-import app.pedalaco.core.pedal.Pedal;
-import app.pedalaco.core.privatemessage.PrivateChat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;

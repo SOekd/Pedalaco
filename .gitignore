@@ -314,3 +314,5 @@ pnpmfile.js
 frontend/generated
 apimaps.txt
 database.mv.db
+ce-license.json
+ce-statistics.json

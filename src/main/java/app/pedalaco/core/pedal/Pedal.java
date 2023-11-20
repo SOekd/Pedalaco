@@ -42,9 +42,6 @@ public class Pedal {
     @ManyToMany @JoinTable(name = "pedal_participants")
     private List<User> participants;
 
-    @OneToMany
-    private List<PedalMessage> messages;
-
     // a imagem não é obrigatória, então é preciso verificar se ela existe!
     @Lob
     @Column(length = 1000000)
