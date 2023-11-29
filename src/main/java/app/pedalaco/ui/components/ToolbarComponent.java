@@ -53,15 +53,16 @@ public class ToolbarComponent extends AppLayout {
     }
 
     private void createDrawer() {
-        var user = User.builder()
-                .name("Gustavo Kamradt")
-                .biography("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                .username("kamradt")
-                .hashedPassword("123")
-                .build();
+
+
+        var user = authenticatedUser.get().orElse(null);
+        if (user == null)
+            return;
+
 
         Avatar profilePicture = new Avatar(user.getName());
-        profilePicture.setAbbreviation("GK");
+
+
         profilePicture.addClassName("drawer-profile-userphoto-image");
         Button profileButton = new Button(profilePicture, event -> getUI().ifPresent(ui -> ui.navigate(ProfileView.class, new RouteParameters("username", user.getUsername()))));
         profileButton.addClassName("drawer-profile-userphoto");

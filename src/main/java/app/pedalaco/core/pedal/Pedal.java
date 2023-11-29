@@ -36,10 +36,10 @@ public class Pedal {
 
     private LocalDateTime date;
 
-    @OneToOne @JoinColumn(name = "author_id")
+    @OneToOne(fetch = FetchType.EAGER) @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToMany @JoinTable(name = "pedal_participants")
+    @ManyToMany(fetch = FetchType.EAGER) @JoinTable(name = "pedal_participants")
     private List<User> participants;
 
     // a imagem não é obrigatória, então é preciso verificar se ela existe!

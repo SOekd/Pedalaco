@@ -12,18 +12,23 @@ import com.vaadin.collaborationengine.CollaborationMessageList;
 import com.vaadin.collaborationengine.MessageManager;
 import com.vaadin.collaborationengine.UserInfo;
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.BoxSizing;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.val;
+
+import java.io.ByteArrayInputStream;
 
 public class PostCardComponent extends VerticalLayout {
 
@@ -106,8 +111,6 @@ public class PostCardComponent extends VerticalLayout {
             dialog.setMaxWidth("100%");
             dialog.setMaxHeight("100%");
 
-            dialog.setMinWidth("100%");
-            dialog.setMinHeight("100%");
             dialog.setCloseOnEsc(true);
 
             dialog.setModal(true);
@@ -150,11 +153,21 @@ public class PostCardComponent extends VerticalLayout {
             Button exit = new Button(VaadinIcon.EXIT.create());
             exit.setText("Sair");
             exit.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            exit.addClickListener(event -> {
+                pedal.getParticipants().removeIf(it -> it.getId().equals(user.getId()));
+                pedalService.save(pedal);
+                renderCallback.run();
+            });
             horizontalLayout.add(exit);
         } else {
             Button join = new Button(VaadinIcon.PLUS.create());
             join.setText("Participar");
             join.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+            join.addClickListener(event -> {
+                pedal.getParticipants().add(user);
+                pedalService.save(pedal);
+                renderCallback.run();
+            });
             horizontalLayout.add(join);
         }
 
@@ -163,6 +176,67 @@ public class PostCardComponent extends VerticalLayout {
             image.setText("Imagem");
             horizontalLayout.add(image);
         }
+
+        val participants = new HorizontalLayout();
+        participants.setAlignItems(Alignment.CENTER);
+        participants.setSpacing(false);
+        participants.setMargin(false);
+        participants.setPadding(false);
+        participants.setJustifyContentMode(JustifyContentMode.END);
+
+        Span label = new Span(VaadinIcon.USER.create());
+        Span counter = new Span(String.valueOf(pedal.getParticipants().size()));
+        counter.getElement().getThemeList().add("badge pill small contrast");
+        counter.getStyle().set("margin-inline-start", "var(--lumo-space-s)");
+        participants.add(label, counter);
+
+        participants.addClickListener(listener -> {
+
+            Dialog participantDialog = new Dialog();
+
+            participantDialog.setMaxWidth("100%");
+            participantDialog.setMaxHeight("100%");
+
+            participantDialog.setCloseOnEsc(true);
+
+            participantDialog.setModal(true);
+
+            VerticalLayout paritipantDialogLayout = new VerticalLayout();
+
+
+            pedal.getParticipants().forEach(it -> {
+                HorizontalLayout participant = new HorizontalLayout();
+                participant.setAlignItems(Alignment.CENTER);
+
+                Avatar avatar = new Avatar(it.getName());
+
+
+                if (it.getProfilePicture() != null)
+                    avatar.setImageResource(new StreamResource("profile-picture", () -> new ByteArrayInputStream(it.getProfilePicture())));
+
+                val username = new Span(it.getUsername());
+
+
+                participant.add(avatar, username);
+
+                paritipantDialogLayout.add(participant);
+            });
+
+
+            paritipantDialogLayout.setSizeFull();
+
+            paritipantDialogLayout.setPadding(false);
+            paritipantDialogLayout.setMargin(false);
+
+            paritipantDialogLayout.setMinHeight("100%");
+            paritipantDialogLayout.setMinWidth("100%");
+
+            participantDialog.add(paritipantDialogLayout);
+
+            participantDialog.open();
+        });
+
+        horizontalLayout.add(participants);
 
         add(title, description, googleMap, horizontalLayout);
 

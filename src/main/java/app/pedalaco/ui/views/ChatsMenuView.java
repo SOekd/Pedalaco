@@ -10,12 +10,10 @@ import com.vaadin.collaborationengine.*;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import lombok.val;
@@ -29,12 +27,6 @@ public class ChatsMenuView extends VerticalLayout {
 
     private final AuthenticatedUser authenticatedUser;
 
-    private final UserService userService;
-
-    private final DefaultCityProvider cityProvider;
-
-    private final PrivateMessagePersister messagePersister;
-
     private final List<ChatInfo> chats;
 
     private ChatInfo currentChat;
@@ -43,9 +35,6 @@ public class ChatsMenuView extends VerticalLayout {
 
     public ChatsMenuView(AuthenticatedUser authenticatedUser, UserService userService, DefaultCityProvider cityProvider, PrivateMessagePersister messagePersister) {
         this.authenticatedUser = authenticatedUser;
-        this.userService = userService;
-        this.cityProvider = cityProvider;
-        this.messagePersister = messagePersister;
 
         List<String> allCities = new ArrayList<>();
         cityProvider.getCitiesAndStates().values().forEach(allCities::addAll);
