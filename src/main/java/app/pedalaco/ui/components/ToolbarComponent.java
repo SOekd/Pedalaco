@@ -42,12 +42,12 @@ public class ToolbarComponent extends AppLayout {
         addToNavbar(header, debugText);
 
         Button homeButton = createNavbarButton(VaadinIcon.HOME.create(), ButtonVariant.LUMO_TERTIARY, MainView.class);
-        Button currentPedal = createNavbarButton(VaadinIcon.GROUP.create(), ButtonVariant.LUMO_TERTIARY, CurrentPedalView.class);
+//        Button currentPedal = createNavbarButton(VaadinIcon.GROUP.create(), ButtonVariant.LUMO_TERTIARY, CurrentPedalView.class);
         Button chatButton = createNavbarButton(VaadinIcon.CHAT.create(), ButtonVariant.LUMO_TERTIARY, ChatsMenuView.class);
-        Button notificationButton = createNavbarButton(VaadinIcon.BELL_O.create(), ButtonVariant.LUMO_TERTIARY, NotificationView.class);
+//        Button notificationButton = createNavbarButton(VaadinIcon.BELL_O.create(), ButtonVariant.LUMO_TERTIARY, NotificationView.class);
         Button postButton = createNavbarButton(VaadinIcon.PLUS.create(), ButtonVariant.LUMO_PRIMARY, PostView.class);
 
-        HorizontalLayout navbar = new HorizontalLayout(homeButton, currentPedal, postButton, chatButton, notificationButton);
+        HorizontalLayout navbar = new HorizontalLayout(homeButton, postButton, chatButton);
         addToNavbar(true, navbar);
         navbar.addClassName("navbar");
     }
@@ -88,6 +88,11 @@ public class ToolbarComponent extends AppLayout {
         configurationButton.setPrefixComponent(configurationIcon);
 
         Button logoutButton = new Button("Log out");
+        logoutButton.addClickListener(listener -> {
+            authenticatedUser.logout();
+            getUI().ifPresent(ui -> ui.navigate(LoginForm.class));
+        });
+
         logoutButton.setPrefixComponent(logoutIcon);
 
         configurationButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);

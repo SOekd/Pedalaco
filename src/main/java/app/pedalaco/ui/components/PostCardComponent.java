@@ -29,6 +29,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
+import java.util.stream.Stream;
 
 public class PostCardComponent extends VerticalLayout {
 
@@ -204,7 +205,7 @@ public class PostCardComponent extends VerticalLayout {
             VerticalLayout paritipantDialogLayout = new VerticalLayout();
 
 
-            pedal.getParticipants().forEach(it -> {
+            Stream.concat(Stream.of(pedal.getAuthor()), pedal.getParticipants().stream()).forEach(it -> {
                 HorizontalLayout participant = new HorizontalLayout();
                 participant.setAlignItems(Alignment.CENTER);
 
@@ -214,8 +215,7 @@ public class PostCardComponent extends VerticalLayout {
                 if (it.getProfilePicture() != null)
                     avatar.setImageResource(new StreamResource("profile-picture", () -> new ByteArrayInputStream(it.getProfilePicture())));
 
-                val username = new Span(it.getUsername());
-
+                val username = new Span(it.getUsername() +((it.getId().equals(pedal.getAuthor().getId()) ? " (criador)" : "")));
 
                 participant.add(avatar, username);
 
