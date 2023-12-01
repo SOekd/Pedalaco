@@ -4,6 +4,8 @@
 */
 
 /* Example: CSS class name to center align the content . */
+@import "chats.css";
+@import "postcard.css";
 @import "post.css";
 @import "login.css";
 @import "toolbar.css";

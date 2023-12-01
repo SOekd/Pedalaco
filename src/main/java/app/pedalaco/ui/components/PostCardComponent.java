@@ -29,7 +29,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.val;
 
 import java.io.ByteArrayInputStream;
-import java.util.stream.Stream;
 
 public class PostCardComponent extends VerticalLayout {
 
@@ -59,28 +58,13 @@ public class PostCardComponent extends VerticalLayout {
     }
 
     private void render() {
-
-        // border
-        getStyle().set("border", "1px solid #ccc");
-        getStyle().set("border-radius", "5px");
-        // shadow
-        getStyle().set("box-shadow", "0 2px 4px 0 rgba(0,0,0,.2)");
-
-        setMargin(true);
-
-        setBoxSizing(BoxSizing.BORDER_BOX);
-
-        setMaxWidth("90%");
+        this.addClassName("postcard-body");
 
         val title = new H3(pedal.getTitle());
-        title.addClassName(LumoUtility.FontSize.XSMALL);
+        title.addClassName("postcard-title");
 
         val description = new Paragraph(pedal.getDescription());
-        description.addClassName(LumoUtility.FontSize.XXSMALL);
-        description.setMaxWidth("100%");
-        description.getStyle().set("white-space", "normal");
-        description.getStyle().set("overflow-wrap", "break-word");
-        description.getStyle().set("word-wrap", "break-word");
+        description.addClassName("postcard-description");
 
         GoogleMap googleMap = new GoogleMap(mapKey, null, null);
         googleMap.setMapType(GoogleMap.MapType.ROADMAP);
@@ -101,23 +85,21 @@ public class PostCardComponent extends VerticalLayout {
         googleMap.setHeight(200, Unit.PIXELS);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.setWidthFull();
+        horizontalLayout.addClassName("postcard-bottom-layout");
 
         Button comments = new Button(VaadinIcon.COMMENTS.create());
+        comments.addClassName("postcard-button");
         comments.setText("Comentar");
         comments.addClickListener(listener -> {
 
             Dialog dialog = new Dialog();
-
-            dialog.setMaxWidth("100%");
-            dialog.setMaxHeight("100%");
+            dialog.addClassName("postcard-dialog");
 
             dialog.setCloseOnEsc(true);
 
             dialog.setModal(true);
 
             VerticalLayout dialogLayout = new VerticalLayout();
-
             list = new CollaborationMessageList(new UserInfo(String.valueOf(user.getId()), user.getName()), "chat/" + pedal.getId());
             list.setSizeFull();
 
@@ -130,14 +112,9 @@ public class PostCardComponent extends VerticalLayout {
 
             chatContainer.add(list, input);
             dialogLayout.add(chatContainer);
-            dialogLayout.setSizeFull();
             dialogLayout.expand(list);
 
-            dialogLayout.setPadding(false);
-            dialogLayout.setMargin(false);
-
-            dialogLayout.setMinHeight("100%");
-            dialogLayout.setMinWidth("100%");
+            dialogLayout.addClassName("postcard-dialog-layout");
             dialog.add(dialogLayout);
 
             dialog.open();
@@ -146,12 +123,14 @@ public class PostCardComponent extends VerticalLayout {
 
         if (pedal.getAuthor().getId().equals(user.getId())) {
             Button cancel = new Button(VaadinIcon.EDIT.create());
+            cancel.addClassName("postcard-button");
             cancel.setText("Cancelar");
             cancel.addThemeVariants(ButtonVariant.LUMO_ERROR);
             cancel.addClickListener(event -> cancelPedal().open());
             horizontalLayout.add(cancel);
         } else if (pedal.getParticipants().stream().anyMatch(it -> it.getId().equals(user.getId()))) {
             Button exit = new Button(VaadinIcon.EXIT.create());
+            exit.addClassName("postcard-button");
             exit.setText("Sair");
             exit.addThemeVariants(ButtonVariant.LUMO_ERROR);
             exit.addClickListener(event -> {
@@ -162,6 +141,7 @@ public class PostCardComponent extends VerticalLayout {
             horizontalLayout.add(exit);
         } else {
             Button join = new Button(VaadinIcon.PLUS.create());
+            join.addClassName("postcard-button");
             join.setText("Participar");
             join.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
             join.addClickListener(event -> {
@@ -179,11 +159,7 @@ public class PostCardComponent extends VerticalLayout {
         }
 
         val participants = new HorizontalLayout();
-        participants.setAlignItems(Alignment.CENTER);
-        participants.setSpacing(false);
-        participants.setMargin(false);
-        participants.setPadding(false);
-        participants.setJustifyContentMode(JustifyContentMode.END);
+        participants.addClassName("postcard-participants");
 
         Span label = new Span(VaadinIcon.USER.create());
         Span counter = new Span(String.valueOf(pedal.getParticipants().size()));
@@ -194,9 +170,7 @@ public class PostCardComponent extends VerticalLayout {
         participants.addClickListener(listener -> {
 
             Dialog participantDialog = new Dialog();
-
-            participantDialog.setMaxWidth("100%");
-            participantDialog.setMaxHeight("100%");
+            participantDialog.addClassName("postcard-dialog");
 
             participantDialog.setCloseOnEsc(true);
 
@@ -205,7 +179,7 @@ public class PostCardComponent extends VerticalLayout {
             VerticalLayout paritipantDialogLayout = new VerticalLayout();
 
 
-            Stream.concat(Stream.of(pedal.getAuthor()), pedal.getParticipants().stream()).forEach(it -> {
+            pedal.getParticipants().forEach(it -> {
                 HorizontalLayout participant = new HorizontalLayout();
                 participant.setAlignItems(Alignment.CENTER);
 
@@ -215,31 +189,22 @@ public class PostCardComponent extends VerticalLayout {
                 if (it.getProfilePicture() != null)
                     avatar.setImageResource(new StreamResource("profile-picture", () -> new ByteArrayInputStream(it.getProfilePicture())));
 
-                val username = new Span(it.getUsername() +((it.getId().equals(pedal.getAuthor().getId()) ? " (criador)" : "")));
+                val username = new Span(it.getUsername());
+
 
                 participant.add(avatar, username);
 
                 paritipantDialogLayout.add(participant);
             });
 
-
-            paritipantDialogLayout.setSizeFull();
-
-            paritipantDialogLayout.setPadding(false);
-            paritipantDialogLayout.setMargin(false);
-
-            paritipantDialogLayout.setMinHeight("100%");
-            paritipantDialogLayout.setMinWidth("100%");
-
             participantDialog.add(paritipantDialogLayout);
 
             participantDialog.open();
         });
 
-        horizontalLayout.add(participants);
-
-        add(title, description, googleMap, horizontalLayout);
-
+        HorizontalLayout participantsLayout = new HorizontalLayout(participants);
+        participantsLayout.addClassName("postcard-participants-layout");
+        add(title, description, googleMap, horizontalLayout,participantsLayout);
     }
 
     public void updateMarker(double x, double y) {

@@ -41,8 +41,8 @@ public class ChatsMenuView extends VerticalLayout {
         chats = allCities.stream().map(ChatInfo::new).toList();
 
         for (ChatInfo chat : chats) {
-            MessageManager mm = new MessageManager(this, getUserInfo(authenticatedUser.get().orElseThrow()), chat.getCollaborationTopic(), messagePersister);
-            mm.setMessageHandler(context -> {
+            MessageManager messageManager = new MessageManager(this, getUserInfo(authenticatedUser.get().orElseThrow()), chat.getCollaborationTopic(), messagePersister);
+            messageManager.setMessageHandler(context -> {
                 if (currentChat != chat) {
                     chat.incrementUnread();
                 }
@@ -51,7 +51,12 @@ public class ChatsMenuView extends VerticalLayout {
 
         currentChat = getChatInfo("Joinville");
 
-        add(getPossibleChats());
+        HorizontalLayout filterLayout = new HorizontalLayout(getPossibleChats());
+        filterLayout.addClassName("chats-filter");
+        add(filterLayout);
+
+        this.addClassName("chats-body");
+        this.setSpacing(false);
 
         renderChat();
     }
@@ -65,17 +70,22 @@ public class ChatsMenuView extends VerticalLayout {
 
         CollaborationMessageInput input = new CollaborationMessageInput(list);
         input.setWidthFull();
+        input.addClassName("chats-input");
 
         VerticalLayout chatContainer = new VerticalLayout();
         chatContainer.addClassNames(LumoUtility.Flex.AUTO, LumoUtility.Overflow.HIDDEN);
+        chatContainer.addClassName("chats-messages");
 
 
         CollaborationAvatarGroup avatarGroup = new CollaborationAvatarGroup(userInfo, currentChat.getCollaborationTopic());
         avatarGroup.setMaxItemsVisible(4);
-        avatarGroup.setMinHeight("10%");
-
+        avatarGroup.addClassName("chats-group");
+        HorizontalLayout groupContainer = new HorizontalLayout(avatarGroup);
+        groupContainer.addClassName("chats-group-container");
         chatContainer.add(list, input);
-        add(avatarGroup, chatContainer);
+        VerticalLayout verticalLayout = new VerticalLayout(groupContainer, chatContainer);
+        verticalLayout.addClassName("chats-container");
+        add(verticalLayout);
         setSizeFull();
         expand(list);
     }
@@ -90,14 +100,10 @@ public class ChatsMenuView extends VerticalLayout {
 
     private ComboBox<String> getPossibleChats() {
 
-
         ComboBox.ItemFilter<String> filter = (filteringUser, filterString) -> filteringUser.toLowerCase().startsWith(filterString.toLowerCase());
 
-
         ComboBox<String> possibleChats = new ComboBox<>();
-
-
-        possibleChats.setWidth("100%");
+        possibleChats.addClassName("chats-filter-content");
 
         val renderer = new ComponentRenderer<Component, String>(chat -> {
             val chatLayout = new HorizontalLayout();
@@ -105,6 +111,7 @@ public class ChatsMenuView extends VerticalLayout {
             chatLayout.add(new Span(chatInfo.getName()), chatInfo.unreadBadge);
 
             chatLayout.setJustifyContentMode(JustifyContentMode.BETWEEN);
+            chatLayout.addClassName("chats-layout");
 
             return chatLayout;
         });
@@ -138,7 +145,6 @@ public class ChatsMenuView extends VerticalLayout {
             this.unread = unread;
 
             unreadBadge = new Span(String.valueOf(unread));
-
             unreadBadge.getElement().getThemeList().add("badge pill small contrast");
             unreadBadge.getStyle().set("margin-inline-start", "var(--lumo-space-s)");
             String counterLabel = String.format("%d mensagens não lidas", unread);
